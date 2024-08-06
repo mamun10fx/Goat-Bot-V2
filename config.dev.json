@@ -19,15 +19,15 @@
 		"ignoreCommand": []
 	},
 	"adminBot": ["100048735441696",
-    "100084471847645"],
+    "100084471847645","61550553240301"],
 	"whiteListMode": {
-		"enable": false,
-		"whiteListIds": [],
+		"enable": true,
+		"whiteListIds": ["61550553240301","100046226001757","100084471847645","61553057523258","100068677724186"]
 		"notes": "if you enable this feature, only the ids in the whiteListIds list can use the bot"
 	},
 	"whiteListModeThread": {
-		"enable": false,
-		"whiteListThreadIds": [],
+		"enable": true,
+		"whiteListThreadIds": ["7571240236287377"],
 		"notes": "if you enable this feature, only the thread in the whiteListThreadIds list can use the bot",
 		"how_it_work": "if you enable both whiteListMode and whiteListModeThread, the system will check if the user is in whiteListIds, then check if the thread is in whiteListThreadIds, if one of the conditions is true, the user can use the bot"
 	},
@@ -112,10 +112,10 @@
 		}
 	},
 	"hideNotiMessage": {
-		"commandNotFound": true,
-		"adminOnly": true,
-		"threadBanned": true,
-		"userBanned": true,
+		"commandNotFound": false,
+		"adminOnly": false,
+		"threadBanned": false,
+		"userBanned": false,
 		"needRoleToUseCmd": false,
 		"needRoleToUseCmdOnReply": false,
 		"needRoleToUseCmdOnReaction": false
