@@ -8,6 +8,7 @@ async function video(api, event, args, message) {
     try {
         let title = '';
         let shortUrl = '';
+        let videoId = '';
 
         const extractShortUrl = async () => {
             const attachment = event.messageReply.attachments[0];
@@ -18,15 +19,15 @@ async function video(api, event, args, message) {
             }
         };
 
-        let videoId = '';
         if (event.messageReply && event.messageReply.attachments && event.messageReply.attachments.length > 0) {
             shortUrl = await extractShortUrl();
-            const musicRecognitionResponse = await axios.get(`https://audio-recon.onrender.com/kshitiz?url=${encodeURIComponent(shortUrl)}`);
+            const musicRecognitionResponse = await axios.get(`https://audio-recom.onrender.com/kshitiz?url=${encodeURIComponent(shortUrl)}`);
             title = musicRecognitionResponse.data.title;
             const searchResponse = await axios.get(`https://youtube-kshitiz.vercel.app/youtube?search=${encodeURIComponent(title)}`);
             if (searchResponse.data.length > 0) {
                 videoId = searchResponse.data[0].videoId;
             }
+
             shortUrl = await shortenURL(shortUrl);
         } else if (args.length === 0) {
             message.reply("Please provide a video name or reply to a video or audio attachment.");
@@ -37,9 +38,10 @@ async function video(api, event, args, message) {
             if (searchResponse.data.length > 0) {
                 videoId = searchResponse.data[0].videoId;
             }
-            const videoUrl = await axios.get(`https://youtube-kshitiz.vercel.app/download?id=${encodeURIComponent(videoId)}`);
-            if (videoUrl.data.length > 0) {
-                shortUrl = await shortenURL(videoUrl.data[0]);
+
+            const videoUrlResponse = await axios.get(`https://youtube-kshitiz.vercel.app/download?id=${encodeURIComponent(videoId)}`);
+            if (videoUrlResponse.data.length > 0) {
+                shortUrl = await shortenURL(videoUrlResponse.data[0]);
             }
         }
 
@@ -49,12 +51,13 @@ async function video(api, event, args, message) {
         }
 
         const downloadResponse = await axios.get(`https://youtube-kshitiz.vercel.app/download?id=${encodeURIComponent(videoId)}`);
-        if (downloadResponse.data.length === 0) {
+        const videoUrl = downloadResponse.data[0]; 
+
+        if (!videoUrl) {
             message.reply("Failed to retrieve download link for the video.");
             return;
         }
 
-        const videoUrl = downloadResponse.data[0];
         const writer = fs.createWriteStream(path.join(__dirname, "cache", `${videoId}.mp4`));
         const response = await axios({
             url: videoUrl,
@@ -64,45 +67,33 @@ async function video(api, event, args, message) {
 
         response.data.pipe(writer);
 
-        writer.on('finish', async () => {
-            const { data } = await axios.get(videoUrl, { method: 'GET', responseType: 'arraybuffer' });
-            fs.writeFileSync(path.join(__dirname, "cache", `puti.m4a`), Buffer.from(data, 'utf-8'));
-
-            const audioReadStream = fs.createReadStream(path.join(__dirname, "cache", `puti.m4a`));
-
-
-            const lyricsResponse = await axios.get(`https://lyrist.vercel.app/api/${encodeURIComponent(title)}`);
-            const { lyrics } = lyricsResponse.data;
-
-
-            const messageBody = `🎧 Playing: ${title}\n\n${lyrics}`;
-
-
-            message.reply({ body: messageBody, attachment: audioReadStream });
+        writer.on('finish', () => {
+            const videoStream = fs.createReadStream(path.join(__dirname, "cache", `${videoId}.mp4`)); 
+            message.reply({ body: `📹 Playing: ${title}`, attachment: videoStream });
             api.setMessageReaction("✅", event.messageID, () => {}, true);
         });
 
         writer.on('error', (error) => {
             console.error("Error:", error);
-            message.reply("Error occurred while processing the audio.");
+            message.reply("Error downloading the video.");
         });
     } catch (error) {
         console.error("Error:", error);
-        message.reply("Error occurred while processing the audio.");
+        message.reply("An error occurred.");
     }
 }
 
 module.exports = {
     config: {
-        name: "play",
+        name: "media", 
         version: "1.0",
         author: "Kshitiz",
         countDown: 10,
         role: 0,
-        shortDescription: "Play audio from YouTube with lyrics",
-        longDescription: "Play audio from YouTube and display its lyrics, supports audio recognition.",
+        shortDescription: "play video from youtube",
+        longDescription: "play video from youtube support audio recognition.",
         category: "music",
-        guide: "{p} audio audioname / reply to audio or video"
+        guide: "{p} video videoname / reply to audio or video" 
     },
     onStart: function ({ api, event, args, message }) {
         return video(api, event, args, message);

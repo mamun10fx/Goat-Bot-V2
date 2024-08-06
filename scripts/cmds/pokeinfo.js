@@ -4,16 +4,16 @@ const path = require("path");
 
 module.exports = {
   config: {
-    name: "opinfo",
+    name: "pokeinfo",
     aliases: [],
     author: "Vex_Kshitiz",
     version: "1.0",
     cooldowns: 5,
     role: 0,
     shortDescription: "",
-    longDescription: "Get information about a One Piece anime character.",
+    longDescription: "Get information about a Pokémon.",
     category: "fun",
-    guide: "{p}opinfo {name}",
+    guide: "{p}pokeinfo {name}",
   },
 
   onStart: async function ({ api, event, args, message }) {
@@ -30,24 +30,51 @@ module.exports = {
 
     const isAuthorValid = await checkAuthor(module.exports.config.author);
     if (!isAuthorValid) {
-      await message.reply("Author changer alert! this cmd belongs to Vex_Kshitiz.");
+      await message.reply("Author changer alert! This command belongs to Vex_Kshitiz.");
       return;
     }
 
-    const characterName = args.join(" ");
-    const opApiUrl = `https://character-info-kshitiz.vercel.app/onepiece?character=${encodeURIComponent(characterName)}`;
+    const pokemonName = args.join(" ");
+    const pokeApiUrl = `https://poke-info-blush.vercel.app/kshitiz?name=${encodeURIComponent(pokemonName)}`;
 
     try {
-      const response = await axios.get(opApiUrl);
-      const { title, description, image, info } = response.data;
+      const response = await axios.get(pokeApiUrl);
+      const {
+        name,
+        image,
+        type,
+        species,
+        height,
+        weight,
+        abilities,
+        eggGroups,
+        genderRatio,
+        evYield,
+        catchRate,
+        baseFriendship,
+        baseExp,
+        growthRate,
+        eggCycles
+      } = response.data;
 
-      const infoText = Object.entries(info)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join("\n");
+      const infoText = `
+        Name: ${name}
+        Type: ${type}
+        Species: ${species}
+        Height: ${height}
+        Weight: ${weight}
+        Abilities: ${abilities.join(", ")}
+        Egg Groups: ${eggGroups.join(", ")}
+        Gender Ratio: ${genderRatio}
+        EV Yield: ${evYield}
+        Catch Rate: ${catchRate}
+        Base Friendship: ${baseFriendship}
+        Base Exp: ${baseExp}
+        Growth Rate: ${growthRate}
+        Egg Cycles: ${eggCycles}
+      `;
 
-      const messageBody = `Name: ${title}\n\nDescription: ${description}\n\n${infoText}`;
-
-      const tempImagePath = path.join(__dirname, "cache", `${Date.now()}_${title}.jpg`);
+      const tempImagePath = path.join(__dirname, "cache", `${Date.now()}_${name}.jpg`);
 
       await new Promise((resolve, reject) => {
         const writer = fs.createWriteStream(tempImagePath);
@@ -60,7 +87,7 @@ module.exports = {
 
       const stream = fs.createReadStream(tempImagePath);
       message.reply({
-        body: messageBody,
+        body: infoText,
         attachment: stream,
       }, (err) => {
         if (err) console.error(err);

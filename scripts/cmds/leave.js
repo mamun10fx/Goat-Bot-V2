@@ -4,14 +4,15 @@ const request = require("request");
 
 module.exports = {
   config: {
-    name: "join",
-    version: "3.0", 
+    name: "leave",
+    aliases: ["l"],
+    version: "2.0", 
     author: "Vex_Kshitiz",
     countDown: 5,
     role: 2,
-    shortDescription: "Join the group that bot is in",
+    shortDescription: "Bot will leave a group chat",
     longDescription: "",
-    category: "user",
+    category: "admin",
     guide: {
       en: "{p}{n}",
     },
@@ -27,10 +28,10 @@ module.exports = {
         api.sendMessage('No group chats found.', event.threadID);
       } else {
         const formattedList = filteredList.map((group, index) =>
-          `${index + 1}. ${group.threadName}\n𝐓𝐈𝐃: ${group.threadID}`
+          `│${index + 1}. ${group.threadName}\n│𝐓𝐈𝐃: ${group.threadID}`
         );
 
-  
+       
         const start = 0;
         const currentList = formattedList.slice(start, start + 5);
 
@@ -38,7 +39,7 @@ module.exports = {
 
         const sentMessage = await api.sendMessage(message, event.threadID);
         global.GoatBot.onReply.set(sentMessage.messageID, {
-          commandName: 'join',
+          commandName: 'leave',
           messageID: sentMessage.messageID,
           author: event.senderID,
           start,
@@ -59,7 +60,7 @@ module.exports = {
     const userInput = args.join(" ").trim().toLowerCase();
 
     if (userInput === 'next') {
-    
+  
       const nextPageStart = start + 5;
       const nextPageEnd = nextPageStart + 5;
 
@@ -80,7 +81,7 @@ module.exports = {
 
         const sentMessage = await api.sendMessage(message, event.threadID);
         global.GoatBot.onReply.set(sentMessage.messageID, {
-          commandName: 'join',
+          commandName: 'leave',
           messageID: sentMessage.messageID,
           author: event.senderID,
           start: nextPageStart,
@@ -92,7 +93,7 @@ module.exports = {
       }
 
     } else if (userInput === 'previous') {
-     
+  
       const prevPageStart = Math.max(start - 5, 0);
       const prevPageEnd = prevPageStart + 5;
 
@@ -113,7 +114,7 @@ module.exports = {
 
         const sentMessage = await api.sendMessage(message, event.threadID);
         global.GoatBot.onReply.set(sentMessage.messageID, {
-          commandName: 'join',
+          commandName: 'leave',
           messageID: sentMessage.messageID,
           author: event.senderID,
           start: prevPageStart,
@@ -125,7 +126,7 @@ module.exports = {
       }
 
     } else if (!isNaN(userInput)) {
-     
+  
       const groupIndex = parseInt(userInput, 10);
 
       try {
@@ -140,19 +141,21 @@ module.exports = {
         const selectedGroup = filteredList[groupIndex - 1];
         const groupID = selectedGroup.threadID;
 
-        await api.addUserToGroup(event.senderID, groupID);
-        api.sendMessage(`You have joined the group chat: ${selectedGroup.threadName}`, event.threadID, event.messageID);
+        const botUserId = api.getCurrentUserID();
+        await api.removeUserFromGroup(botUserId, groupID);
+
+        api.sendMessage(`Left the group chat: ${selectedGroup.threadName}`, event.threadID, event.messageID);
 
       } catch (error) {
-        console.error("Error joining group chat", error);
-        api.sendMessage('An error occurred while joining the group chat.\nPlease try again later.', event.threadID, event.messageID);
+        console.error("Error leaving group chat", error);
+        api.sendMessage('An error occurred while leaving the group chat.\nPlease try again later.', event.threadID, event.messageID);
       }
 
     } else {
       api.sendMessage('Invalid input.\nPlease provide a valid number or reply with "next" or "previous".', event.threadID, event.messageID);
     }
 
-    
+   
     global.GoatBot.onReply.delete(event.messageID);
   },
 };
