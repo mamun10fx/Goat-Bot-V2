@@ -2,7 +2,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 module.exports.config = {
-  name: 'Lyrics',
+  name: 'lyrics2',
   version: '1.0.0',
   hasPermssion: 0,
   credits: 'August Quinn',
