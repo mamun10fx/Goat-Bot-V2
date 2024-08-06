@@ -1,52 +1,77 @@
-const moment = require('moment-timezone');
-
 module.exports = {
   config: {
     name: "uptime",
+    aliases: ["up", "upt"],
     version: "1.0",
-    aliases: ["upt", "up"],
-    author: "kaizenji",
+    author: "kshitiz",
     role: 0,
-    cooldown: 5,
     shortDescription: {
-      vi: "",
-      en: "Sends information about the bot and admin."
+      en: "Displays the bot's uptime."
     },
     longDescription: {
-      vi: "",
-      en: "Sends information about the bot and admin."
+      en: "Find out how long the bot has been tirelessly serving you."
     },
-    category: "system",
+    category: "?????????",
     guide: {
-      en: "{pn}"
-    },
-    envConfig: {}
+      en: "Use {p}uptime to reveal the bot's operational duration."
+    }
   },
+  onStart: async function ({ api, event, args }) {
 
-  onStart: async function ({ message, prefix }) {
-    
-    const now = moment();
-    const date = now.format('MMMM Do YYYY');
-    
+    const imageLinks = [
+      "http://tinyurl.com/2bq2cm8v",
+      "http://tinyurl.com/2akqp8ym",
+      "http://tinyurl.com/2bgqfxtf",
+      "http://tinyurl.com/24k52arc",
+      "http://tinyurl.com/2ardsmcw",
+
+    ];
+
+
+    const randomImageIndex = Math.floor(Math.random() * imageLinks.length);
+    const imageUrl = imageLinks[randomImageIndex];
+
+
+    const greetings = [
+      "Ahoy, Captain! ?‍☠️",
+      "Greetings, Master ?",
+      "Hello, Commander ?",
+      "Salutations, Overlord ?",
+      "Welcome back, Sensei ?",
+      "Rise and shine, Boss! ☀️",
+      "Hola, Amigo! ?",
+      "At your service, Your Majesty! ?",
+      "Hey there, Chief! ?",
+      "Good day, Sir/Madam! ?"
+    ];
+    const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+
+
     const uptime = process.uptime();
     const seconds = Math.floor(uptime % 60);
     const minutes = Math.floor((uptime / 60) % 60);
     const hours = Math.floor((uptime / (60 * 60)) % 24);
     const days = Math.floor(uptime / (60 * 60 * 24));
-    const uptimeString = `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
 
-    const additionalText = "";
-
-    // Combine the bot information and additional text in a single message
-message.reply(`===[𝗕𝗢𝗧 𝗨𝗣𝗧𝗜𝗠𝗘]===\n\n𝗗𝗮𝘁𝗲: ${date}\n\n𝗨𝗽𝘁𝗶𝗺𝗲: ${uptimeString}
-      
-      ${additionalText}
-    `);
-  },
-
-  onChat: async function ({ event, message, getLang, prefix }) {
-    if (event.body && event.body.toLowerCase() === "up") {
-      this.onStart({ message, prefix });
+    let uptimeString = `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
+    if (days === 0) {
+      uptimeString = `${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
+      if (hours === 0) {
+        uptimeString = `${minutes} minutes, and ${seconds} seconds`;
+        if (minutes === 0) {
+          uptimeString = `${seconds} seconds`;
+        }
+      }
     }
+
+    const message = `${randomGreeting}\n\nGreetings! Your loyal bot has been operational for: ${uptimeString}`;
+
+    
+    const imageStream = await global.utils.getStreamFromURL(imageUrl);
+
+    api.sendMessage({
+      body: message,
+      attachment: imageStream
+    }, event.threadID, event.messageID);
   }
 };

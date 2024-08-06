@@ -6,7 +6,7 @@ const { shortenURL } = global.utils;
 async function animeSong(api, event, args, message) {
     api.setMessageReaction("🕢", event.messageID, (err) => {}, true);
     try {
-        const animeSongResponse = await axios.get("https://xenoz-yt.vercel.app/channel");
+        const animeSongResponse = await axios.get("https://x-sense.vercel.app/channel");
         const videoUrl = animeSongResponse.data.videoUrl;
 
         const downloadResponse = await axios.get(`https://youtube-kshitiz.vercel.app/download?id=${encodeURIComponent(videoUrl)}`);
@@ -17,7 +17,7 @@ async function animeSong(api, event, args, message) {
 
         const videoDownloadUrl = downloadResponse.data[0];
 
-        const writer = fs.createWriteStream(path.join(__dirname, "cache", `xenoz.mp4`));
+        const writer = fs.createWriteStream(path.join(__dirname, "cache", `xsense.mp4`));
         const response = await axios({
             url: videoDownloadUrl,
             method: 'GET',
@@ -27,7 +27,7 @@ async function animeSong(api, event, args, message) {
         response.data.pipe(writer);
 
         writer.on('finish', async () => {
-            const audioFile = path.join(__dirname, "cache", "xenoz.mp4");
+            const audioFile = path.join(__dirname, "cache", "xsense.mp4");
             const audioReadStream = fs.createReadStream(audioFile);
             const shortUrl = await shortenURL(videoDownloadUrl);
             message.reply({ body: `🎧randomVideo\nDownload Link: ${shortUrl}`, attachment: audioReadStream });
@@ -46,16 +46,16 @@ async function animeSong(api, event, args, message) {
 
 module.exports = {
     config: {
-        name: "xenoz",
+        name: "xsense",
         aliases: [],
         version: "1.0",
         author: "Vex_Kshitiz",
         countDown: 10,
         role: 0,
         shortDescription: "",
-        longDescription: "get random video from xenoz youtube channel",
-        category: "music",
-        guide: "{p} animesong"
+        longDescription: "get random video from xsense youtube channel",
+        category: "video",
+        guide: "{p}xsense"
     },
     onStart: function ({ api, event, args, message }) {
         return animeSong(api, event, args, message);
