@@ -42,10 +42,10 @@ module.exports = {
       let replyMessage = "";
       paginatedCommands.forEach(cmd => {
         replyMessage += `
-        𝗜𝗗:${cmd.id}
-        𝗖𝗠𝗗:${cmd.cmdName}
-        𝗖𝗢𝗗𝗘:${cmd.codeLink}
-        𝗜𝗡𝗙𝗢:${cmd.description}
+        ğ�—œğ�——:${cmd.id}
+        ğ�—–ğ�— ğ�——:${cmd.cmdName}
+        ğ�—–ğ�—¢ğ�——ğ�—˜:${cmd.codeLink}
+        ğ�—œğ�—¡ğ�—™ğ�—¢:${cmd.description}
       ----------------------------------------------`;
       });
 
@@ -84,10 +84,10 @@ module.exports = {
     const selectedCommand = commands.find(cmd => cmd.id === commandID);
 
     let replyMessage = `
-    𝗜𝗗:${selectedCommand.id}
-    𝗖𝗠𝗗:${selectedCommand.cmdName}
-    𝗖𝗢𝗗𝗘:${selectedCommand.codeLink}
-    𝗜𝗡𝗙𝗢:${selectedCommand.description}`;
+    ğ�—œğ�——:${selectedCommand.id}
+    ğ�—–ğ�— ğ�——:${selectedCommand.cmdName}
+    ğ�—–ğ�—¢ğ�——ğ�—˜:${selectedCommand.codeLink}
+    ğ�—œğ�—¡ğ�—™ğ�—¢:${selectedCommand.description}`;
 
     message.reply(replyMessage);
     global.GoatBot.onReply.delete(event.messageID);

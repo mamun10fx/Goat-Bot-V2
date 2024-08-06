@@ -14,7 +14,7 @@ module.exports = {
   },
 
   onStart: async function ({ api, event, usersData, message }) {
-    const excludedUserID = "100079114908948";
+    const excludedUserID = "61557052662679";
     const threadInfo = await api.getThreadInfo(event.threadID);
         const participantIDs = threadInfo.participantIDs.filter(id => id !== event.senderID && id !== excludedUserID); 
         const randomIndex = Math.floor(Math.random() * participantIDs.length);

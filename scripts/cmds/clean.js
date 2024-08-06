@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
   config: {
     name: "clean",
-    aliases: ["cl"],//["c"] add aliases like that 
+    aliases: [],//["c"] add aliases like that 
     author: "kshitiz",  
     version: "2.0",
     cooldowns: 5,

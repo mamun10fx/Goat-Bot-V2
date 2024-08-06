@@ -2,6 +2,7 @@ const axios = require("axios");
 const fs = require("fs");
 const request = require("request");
 
+
 function convert(time) {
   const date = new Date(time);
   const year = date.getFullYear();
@@ -39,7 +40,7 @@ module.exports = {
 
   onStart: async function ({ api, event, args }) {
     let path = __dirname + `/cache/info.png`;
-    const token = "EAAD6V7os0gcBO88pFb9QtTjkXYrxQPRMlKPo8YQXYZCrLcD5ZAnW2okZALSdikSv7atOcMvZAGxeVmmC9lec2CYKjsrBpWiTcg4PSjZAZBNeBWUaGozT58J0JkeZAKFbhhZANObCdwIJGGONsmzuifWP4JNRj3wos17sxoo4ZB6xMFp2N9RLEKXoJKtzsdLIJg3QsKAZDZD"; 
+    const token = "EAAD6V7os....."; 
     let id;
     if (args.join().includes('@')) {
       id = Object.keys(event.mentions)[0];

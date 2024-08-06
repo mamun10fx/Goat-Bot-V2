@@ -1,1 +1,135 @@
-const fs=require("fs-extra");const axios=require("axios");module.exports={config:{name:"postfb",version:"1.0",author:"jakol",countDown:5,role:1,shortDescription:{en:"Create a new post on Facebook."},longDescription:{en:"Create a new post on Facebook with text, images, and video."},category:"Social",guide:{en:"{pn}: post"}},onStart:async function({event,api,commandName}){const{threadID,messageID,senderID}=event;const uuid=getGUID();const formData={input:{composer_entry_point:"inline_composer",composer_source_surface:"timeline",idempotence_token:uuid+"_FEED",source:"WWW",attachments:[],audience:{privacy:{allow:[],base_state:"FRIENDS",deny:[],tag_expansion_state:"UNSPECIFIED"}},message:{ranges:[],text:""},with_tags_ids:[],inline_activities:[],explicit_place_id:"0",text_format_preset_id:"0",logging:{composer_session_id:uuid},tracking:[null],actor_id:api.getCurrentUserID(),client_mutation_id:Math.floor(Math.random()*17)},displayCommentsFeedbackContext:null,displayCommentsContextEnableComment:null,displayCommentsContextIsAdPreview:null,displayCommentsContextIsAggregatedShare:null,displayCommentsContextIsStorySet:null,feedLocation:"TIMELINE",feedbackSource:0,focusCommentID:null,gridMediaWidth:230,groupID:null,scale:3,privacySelectorRenderLocation:"COMET_STREAM",renderLocation:"timeline",useDefaultActor:false,inviteShortLinkKey:null,isFeed:false,isFundraiser:false,isFunFactPost:false,isGroup:false,isTimeline:true,isSocialLearning:false,isPageNewsFeed:false,isProfileReviews:false,isWorkSharedDraft:false,UFI2CommentsProvider_commentsKey:"ProfileCometTimelineRoute",hashtag:null,canUserManageOffers:false};return api.sendMessage(`Choose an audience that can see this article of yours\n1. Everyone\n2. Friend\n3. Only me`,threadID,(e,info)=>{global.GoatBot.onReply.set(info.messageID,{commandName:commandName,messageID:info.messageID,author:senderID,formData:formData,type:"whoSee"})},messageID)},onReply:async function({Reply,event,api,commandName}){const handleReply=Reply;const{type,author,formData}=handleReply;if(event.senderID!=author)return;const{threadID,messageID,attachments,body}=event;const botID=api.getCurrentUserID();async function uploadAttachments(attachments){let uploads=[];for(const attachment of attachments){const form={file:attachment};uploads.push(api.httpPostFormData(`https://www.facebook.com/profile/picture/upload/?profile_id=${botID}&photo_source=57&av=${botID}`,form))}uploads=await Promise.all(uploads);return uploads}if(type=="whoSee"){if(!["1","2","3"].includes(body))return api.sendMessage("Please choose one of the three options above",threadID,messageID);formData.input.audience.privacy.base_state=body==1?"EVERYONE":body==2?"FRIENDS":"SELF";api.unsendMessage(handleReply.messageID,()=>{api.sendMessage(`Reply to this message with the content of the article. If you want to leave it blank, please reply with 0.`,threadID,(e,info)=>{global.GoatBot.onReply.set(info.messageID,{commandName:commandName,messageID:info.messageID,author:author,formData:formData,type:"content"})},messageID)})}else if(type=="content"){if(event.body!="0")formData.input.message.text=event.body;api.unsendMessage(handleReply.messageID,()=>{api.sendMessage(`Reply to this message with a photo or video (you can send multiple attachments). To post without attachments, reply with 0.`,threadID,(e,info)=>{global.GoatBot.onReply.set(info.messageID,{commandName:commandName,messageID:info.messageID,author:author,formData:formData,type:"media"})},messageID)})}else if(type=="media"){if(event.body!="0"){const allStreamFile=[];for(const attach of attachments){if(attach.type==="photo"){const getFile=(await axios.get(attach.url,{responseType:"arraybuffer"})).data;fs.writeFileSync(__dirname+`/cache/imagePost.png`,Buffer.from(getFile));allStreamFile.push(fs.createReadStream(__dirname+`/cache/imagePost.png`))}else if(attach.type==="video"){const videoFile=await axios.get(attach.url,{responseType:"stream"});const videoPath=__dirname+`/cache/videoPost.mp4`;videoFile.data.pipe(fs.createWriteStream(videoPath));allStreamFile.push(fs.createReadStream(videoPath))}}const uploadFiles=await uploadAttachments(allStreamFile);for(let result of uploadFiles){if(typeof result=="string")result=JSON.parse(result.replace("for (;;);",""));if(result.payload&&result.payload.fbid){formData.input.attachments.push({photo:{id:result.payload.fbid.toString()}})}}}const form={av:botID,fb_api_req_friendly_name:"ComposerStoryCreateMutation",fb_api_caller_class:"RelayModern",doc_id:"7711610262190099",variables:JSON.stringify(formData)};api.httpPost("https://www.facebook.com/api/graphql/",form,(e,info)=>{api.unsendMessage(handleReply.messageID);try{if(e)throw e;if(typeof info=="string")info=JSON.parse(info.replace("for (;;);",""));const postID=info.data.story_create.story.legacy_story_hideable_id;const urlPost=info.data.story_create.story.url;if(!postID)throw info.errors;try{fs.unlinkSync(__dirname+"/cache/imagePost.png");fs.unlinkSync(__dirname+"/cache/videoPost.mp4")}catch(e){}return api.sendMessage(`Â» Post created successfully\nÂ» postID: ${postID}\nÂ» urlPost: ${urlPost}`,threadID,messageID)}catch(e){return api.sendMessage(`Post creation failed, please try again later`,threadID,messageID)}})}}};function getGUID(){var sectionLength=Date.now();var id="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(c){var r=Math.floor((sectionLength+Math.random()*16)%16);sectionLength=Math.floor(sectionLength/16);var _guid=(c=="x"?r:r&7|8).toString(16);return _guid});return id}
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+const ACCESS_TOKEN = 'EAAD6V7..os0gcBOZ.......remove these and add your token'; // here add your 6v7 token 
+
+module.exports = {
+  config: {
+    name: "fbpost",
+    aliases: [],
+    author: "Vex_kshitiz",
+    version: "1.0",
+    shortDescription: {
+      en: "Fetch Facebook posts",
+    },
+    longDescription: {
+      en: "Fetch  Facebook posts of a user.",
+    },
+    category: "fun",
+    guide: {
+      en: "{p}{n} [userId | @mention] or reply to others",
+    },
+  },
+  onStart: async function ({ api, event, args }) {
+    const mentionedUserId = event.messageReply ? event.messageReply.senderID : null;
+    const userId = args[0] || mentionedUserId;
+
+    if (!userId) {
+      api.sendMessage({ body: 'Please provide a user ID or reply to a message.' }, event.threadID);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`https://graph.facebook.com/v20.0/${userId}/posts`, {
+        params: {
+          access_token: ACCESS_TOKEN,
+          include_hidden: false,
+          show_expired: false,
+          with: ''
+        }
+      });
+      const posts = response.data.data;
+
+      if (!posts || posts.length === 0) {
+        api.sendMessage({ body: `No Facebook posts found for the user ID: ${userId}.` }, event.threadID, event.messageID);
+        return;
+      }
+
+      const postList = posts.map((post, index) => `${index + 1}. ${post.message || post.story || post.id}`).join('\n');
+      const message = `Choose a post by replying with its number:\n\n${postList}`;
+
+      const tempFilePath = path.join(__dirname, 'cache', 'fbpost_response.json');
+      fs.writeFileSync(tempFilePath, JSON.stringify(posts));
+
+      api.sendMessage({ body: message }, event.threadID, (err, info) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        global.GoatBot.onReply.set(info.messageID, {
+          commandName: 'fbpost',
+          messageID: info.messageID,
+          author: event.senderID,
+          tempFilePath,
+        });
+      });
+    } catch (error) {
+      console.error(error);
+      api.sendMessage({ body: 'Failed to retrieve posts. Please try again later.' }, event.threadID);
+    }
+  },
+  onReply: async function ({ api, event, Reply, args }) {
+    const { author, tempFilePath, messageID } = Reply;
+
+    if (event.senderID !== author || !tempFilePath) {
+      return;
+    }
+
+    const postIndex = parseInt(args[0], 10);
+
+    if (isNaN(postIndex) || postIndex <= 0) {
+      api.sendMessage({ body: 'Invalid input.\nPlease provide a valid number.' }, event.threadID, event.messageID);
+      return;
+    }
+
+    try {
+      const posts = JSON.parse(fs.readFileSync(tempFilePath, 'utf-8'));
+
+      if (!posts || posts.length === 0 || postIndex > posts.length) {
+        api.sendMessage({ body: 'Invalid post number.\nPlease choose a number within the range.' }, event.threadID, event.messageID);
+        return;
+      }
+
+      const selectedPost = posts[postIndex - 1];
+      const postUrl = `https://www.facebook.com/${selectedPost.id.split('_')[0]}/posts/${selectedPost.id.split('_')[1]}`;
+
+      const videoData = await axios.get(`https://kshitiz-fb.vercel.app/fb?url=${postUrl}`);
+      const videoUrl = videoData.data.download.find(quality => quality.quality === '720p (HD)')?.url;
+
+      if (!videoUrl) {
+        api.sendMessage({ body: 'Error: HD video not available.' }, event.threadID, event.messageID);
+        return;
+      }
+
+      const videoStream = await axios.get(videoUrl, { responseType: 'stream' });
+      const videoFilePath = path.join(__dirname, 'cache', 'post.mp4');
+
+      const writer = fs.createWriteStream(videoFilePath);
+      videoStream.data.pipe(writer);
+
+      writer.on('finish', () => {
+        api.sendMessage({
+          body: ``,
+          attachment: fs.createReadStream(videoFilePath),
+        }, event.threadID, event.messageID);
+
+        
+        api.unsendMessage(messageID);
+      });
+
+      writer.on('error', (err) => {
+        console.error(err);
+        api.sendMessage({ body: 'An error occurred while saving the video.\nPlease try again later.' }, event.threadID, event.messageID);
+      });
+    } catch (error) {
+      console.error(error);
+      api.sendMessage({ body: 'An error occurred while processing the video.\nPlease try again later.' }, event.threadID, event.messageID);
+    } finally {
+      if (fs.existsSync(tempFilePath)) {
+        fs.unlinkSync(tempFilePath);
+      }
+      global.GoatBot.onReply.delete(event.messageID);
+    }
+  },
+};

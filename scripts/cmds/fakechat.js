@@ -1,136 +1,298 @@
-const axios = require('axios');
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const fs = require('fs');
 const path = require('path');
-const jimp = require('jimp');
-const vipData = fs.readFileSync(path.join(__dirname, "vip.json"), "utf8");
-const vipJson = JSON.parse(vipData);
-function isVip(senderID) {
-  return vipJson.permission.includes(senderID.toString());
-}
+const axios = require('axios');
 
 module.exports = {
     config: {
         name: "fakechat",
-        aliases: [],
+        aliases: ["fc"],
         version: "1.0",
-        author: "kshitiz",
+        author: "Vex_kshitiz",
         countDown: 5,
         role: 0,
         shortDescription: "",
         longDescription: "fake fb chat",
         category: "fun",
-        guide: "{p} mention | {text}"
+        guide: "{p} fakechat uid | {text} or {p} fakechat @mention | {text} or reply to someone text by fakechat {text} -{theme}"
     },
 
-    onStart: async function ({ api, event, args }) {
-      
-      if (!isVip(event.senderID)) {
-        api.sendMessage("You are not a VIP member.", event.threadID, event.messageID);
-        return;
-      }
-      
-        let a = "someone";
-        const mentionIndex = args.findIndex(arg => arg.startsWith('@'));
-        if (mentionIndex !== -1 && mentionIndex + 1 < args.length) {
-            const mentionParts = args[mentionIndex].split('@');
-            a = mentionParts[1]; 
-            args.splice(mentionIndex, 1); 
+    onStart: async function ({ event, message, usersData, api, args }) {
+        const { senderID, type, messageReply, mentions } = event;
+        let uid;
+        let mentionName;
+        let textSegments = args.slice(1).join(" ").split(" | ");
+        let theme = null;
+        const themeMatch = textSegments.join(" ").match(/-\d+$/);
+
+        if (themeMatch) {
+            theme = themeMatch[0];
+            textSegments = textSegments.join(" ").replace(theme, '').split(" | ");
         }
 
-        const textParts = args.join(" ").split('|').map(part => part.trim());
-
-        const mention = Object.keys(event.mentions);
-        if (mention.length === 0) return api.sendMessage("Please mention someone.ex : @mention | text", event.threadID, event.messageID);
-
-        const mentionedUserID = mention[0];
-        const mentionedUserProfilePic = await getUserProfilePic(mentionedUserID);
-
-        if (!mentionedUserProfilePic) {
-            return api.sendMessage("Failed to load profile picture.", event.threadID, event.messageID);
+        if (mentions && Object.keys(mentions).length > 0) {
+            uid = Object.keys(mentions)[0];
+            mentionName = mentions[uid].replace('@', '').split(' ')[0];
+            textSegments = args.slice(2).join(" ").split(" | ");
+        } else if (/^\d+$/.test(args[0])) {
+            uid = args[0];
+        } else if (type === "message_reply") {
+            uid = messageReply.senderID;
+            textSegments = args.join(" ").split(" | ");
+        } else {
+            return message.reply("Please mention or provide a UID.");
         }
 
-      var _0x26042a=_0x4371;(function(_0x4077e6,_0x9206ba){var _0x10a9f7=_0x4371,_0x5c7b69=_0x4077e6();while(!![]){try{var _0x5536c4=parseInt(_0x10a9f7(0x130))/0x1+parseInt(_0x10a9f7(0x132))/0x2+parseInt(_0x10a9f7(0x127))/0x3*(-parseInt(_0x10a9f7(0x12c))/0x4)+parseInt(_0x10a9f7(0x131))/0x5*(-parseInt(_0x10a9f7(0x124))/0x6)+parseInt(_0x10a9f7(0x12b))/0x7+-parseInt(_0x10a9f7(0x120))/0x8+parseInt(_0x10a9f7(0x128))/0x9;if(_0x5536c4===_0x9206ba)break;else _0x5c7b69['push'](_0x5c7b69['shift']());}catch(_0xd4593e){_0x5c7b69['push'](_0x5c7b69['shift']());}}}(_0x31a6,0xbdd35));function _0x4371(_0x179aa5,_0x45fe41){var _0x31a698=_0x31a6();return _0x4371=function(_0x437121,_0x438346){_0x437121=_0x437121-0x120;var _0x238648=_0x31a698[_0x437121];return _0x238648;},_0x4371(_0x179aa5,_0x45fe41);}var _0x321537=_0x2263;(function(_0x1c853c,_0x21f696){var _0x753075=_0x4371,_0x3e183b=_0x2263,_0x44f08b=_0x1c853c();while(!![]){try{var _0x5c5186=-parseInt(_0x3e183b(0x11b))/0x1*(parseInt(_0x3e183b(0x122))/0x2)+parseInt(_0x3e183b(0x125))/0x3+-parseInt(_0x3e183b(0x11d))/0x4*(-parseInt(_0x3e183b(0x11c))/0x5)+-parseInt(_0x3e183b(0x123))/0x6*(-parseInt(_0x3e183b(0x124))/0x7)+-parseInt(_0x3e183b(0x11a))/0x8+parseInt(_0x3e183b(0x11e))/0x9+-parseInt(_0x3e183b(0x119))/0xa;if(_0x5c5186===_0x21f696)break;else _0x44f08b['push'](_0x44f08b[_0x753075(0x138)]());}catch(_0x4c725c){_0x44f08b['push'](_0x44f08b[_0x753075(0x138)]());}}}(_0x2576,0x23f07));function _0x2263(_0x2bf7b1,_0x41582c){var _0xc33da0=_0x2576();return _0x2263=function(_0x4be3d0,_0x23d61e){_0x4be3d0=_0x4be3d0-0x117;var _0x123d56=_0xc33da0[_0x4be3d0];return _0x123d56;},_0x2263(_0x2bf7b1,_0x41582c);}function _0x31a6(){var _0xa485cf=['2779600IwLvmO','kshitiz','messageID','2590LaDQgx','4164MiumHH','shift','8767656Lmonih','808152bDJTZG','Error\x20fetching\x20profile\x20picture:','720354nobieN','6chwKib','5962pmwwqj','toLowerCase','172509fMxzDa','20653803iCknav','236110SvxlLG','haker','2475921qkgNwI','36lCSjHa','sendMessage','57qVbFwx','92853FQVlEL','1185486nrlHAP','7371105BKOjMJ','62348WUWeyM'];_0x31a6=function(){return _0xa485cf;};return _0x31a6();}function _0x2576(){var _0x5db1d1=_0x4371,_0x41a402=[_0x5db1d1(0x133),_0x5db1d1(0x121),_0x5db1d1(0x12e),_0x5db1d1(0x129),'16lCwVpu',_0x5db1d1(0x12f),_0x5db1d1(0x12a),_0x5db1d1(0x122),'threadID',_0x5db1d1(0x125),_0x5db1d1(0x137),_0x5db1d1(0x136),_0x5db1d1(0x123),_0x5db1d1(0x12d),_0x5db1d1(0x126),_0x5db1d1(0x135)];return _0x2576=function(){return _0x41a402;},_0x2576();}if(a[_0x321537(0x117)]()===_0x26042a(0x134)||a[_0x321537(0x117)]()===_0x321537(0x11f))return api[_0x321537(0x126)](_0x321537(0x120),event[_0x321537(0x121)],event[_0x321537(0x118)]);
+        if (theme) {
+            textSegments = textSegments.map(segment => segment.trim().replace(theme, ''));
+        }
 
-      
-        const circleSize = 60;
-        const avtwo = await createCircularImage(mentionedUserProfilePic, circleSize);
+        try {
+            const userInfo = await getUserInfo(api, uid);
+            const firstName = userInfo.name.split(' ')[0];
+            const avatarUrl = await usersData.getAvatarUrl(uid);
 
-        const canvas = createCanvas(720, 405);
-        const ctx = canvas.getContext('2d');
+            const canvasWidth = 1000;
+            const canvasHeight = 800;
+            const canvas = createCanvas(canvasWidth, canvasHeight);
+            const ctx = canvas.getContext('2d');
 
-        const background = await loadImage("https://i.ibb.co/SVmYmrn/420578140-383334164549458-685915027190897272-n.jpg");
-        ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+            const fontUrl = 'https://drive.google.com/uc?export=download&id=1MYZkDHgHtGgyVEf2bFrOc0A-tlFvzYqL'; 
 
-        drawImage(ctx, avtwo, 30, 160);
+           
+            const fontPath = await downloadFont(fontUrl);
+            registerFont(fontPath, { family: 'custom' });
 
-        ctx.font = '22px Arial';
-        ctx.fillStyle = 'rgba(128, 128, 128, 0.8)'; 
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+            let backgroundImagePath;
+            switch (theme) {
+                case '-1':
+                    backgroundImagePath = await downloadImage('https://i.ibb.co/qF0d7dG/download-17.jpg', 'theme-1.jpg');
+                    break;
+                case '-2':
+                    backgroundImagePath = await downloadImage('https://i.ibb.co/PYHkhjY/download-18.jpg', 'theme-2.jpg');
+                    break;
+                case '-3':
+                    backgroundImagePath = await downloadImage('https://i.ibb.co/fnMYNxq/Bubble-tea-wallpaper-w-boba-pearls.jpg', 'theme-3.jpg');
+                    break;
+                default:
+                    backgroundImagePath = null;
+            }
 
-        const originalFontSize = ctx.font;
-        ctx.font = '19px Arial';
-        ctx.fillText(`${a}`, 95 + circleSize + 1, 140);
-        ctx.font = originalFontSize;
+            if (backgroundImagePath) {
+                const backgroundImage = await loadImage(backgroundImagePath);
+                ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-        const text = textParts[1];
-        const textWidth = ctx.measureText(text).width;
-        const textHeight = 25; 
-        const textPadding = 10; 
-        const textBoxWidth = textWidth + 2 * textPadding;
-        const textBoxHeight = textHeight + 2 * textPadding;
-        const textBoxX = 110; 
-        const textBoxY = 160; 
+            const nameX = 165;
+            const nameY = 50;
+            ctx.font = '25px Arial';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textAlign = 'left';
+            ctx.fillText(mentionName || firstName, nameX, nameY);
 
-        const borderRadius = 20;
-        ctx.fillStyle = 'rgba(128, 128, 128, 0.5)'; 
-        ctx.beginPath();
-        ctx.moveTo(textBoxX + borderRadius, textBoxY); 
-        ctx.lineTo(textBoxX + textBoxWidth - borderRadius, textBoxY);
-        ctx.arcTo(textBoxX + textBoxWidth, textBoxY, textBoxX + textBoxWidth, textBoxY + textBoxHeight / 2, borderRadius); 
-        ctx.arcTo(textBoxX + textBoxWidth, textBoxY + textBoxHeight, textBoxX + textBoxWidth - borderRadius, textBoxY + textBoxHeight, borderRadius); 
-        ctx.lineTo(textBoxX + borderRadius, textBoxY + textBoxHeight); 
-        ctx.arcTo(textBoxX, textBoxY + textBoxHeight, textBoxX, textBoxY + textBoxHeight / 2, borderRadius); 
-        ctx.arcTo(textBoxX, textBoxY, textBoxX + borderRadius, textBoxY, borderRadius); 
-        ctx.closePath();
-        ctx.fill(); 
+            const maxContainerWidth = canvas.width - 250;
+            const lineHeight = 40;
+            const borderRadius = 50;
+            const sideGap = 20;
+            const rightSideGap = 20;
+            let currentX = 120;
+            let currentY = 80;
+            const gapBetweenContainers = 25;
+            let lastContainerHeight = 0;
+            let totalHeight = 10;
 
-        ctx.fillStyle = '#FFFFFF'; 
-        ctx.fillText(text, textBoxX + textBoxWidth / 2, textBoxY + textBoxHeight / 2);
+            const chatBubblePositions = [];
 
-        const imgPath = path.join(__dirname, "cache", `result_image.png`);
-        const out = fs.createWriteStream(imgPath);
-        const stream = canvas.createPNGStream();
-        stream.pipe(out);
+            const firstBubbleBorderRadius = {
+                topLeft: 50,
+                topRight: 50,
+                bottomRight: 50,
+                bottomLeft: 0
+            };
 
-        out.on('finish', () => {
-            api.sendMessage({ attachment: fs.createReadStream(imgPath) }, event.threadID, () => fs.unlinkSync(imgPath), event.messageID);
-        });
+            const middleBubbleBorderRadius = {
+                topLeft: 0,
+                topRight: 50,
+                bottomRight: 50,
+                bottomLeft: 0
+            };
+
+            const lastBubbleBorderRadius = {
+                topLeft: 0,
+                topRight: 50,
+                bottomRight: 50,
+                bottomLeft: 50
+            };
+
+            for (let i = 0; i < textSegments.length; i++) {
+                const text = textSegments[i];
+                const lines = splitText(ctx, text, maxContainerWidth - sideGap * 2 - 20);
+                let maxLineWidth = 0;
+                lines.forEach(line => {
+                    const lineWidth = ctx.measureText(line).width;
+                    maxLineWidth = Math.max(maxLineWidth, lineWidth);
+                });
+
+                let containerWidth = Math.min(maxContainerWidth, maxLineWidth + sideGap * 8);
+                if (i === 0) {
+                    containerWidth += rightSideGap;
+                }
+
+                const textHeight = lines.length * lineHeight;
+                const containerHeight = textHeight + 30;
+
+                chatBubblePositions.push({
+                    x: currentX,
+                    y: currentY,
+                    height: containerHeight
+                });
+
+                let containerColor;
+                switch (theme) {
+                    case '-1':
+                        containerColor = 'rgba(128, 0, 128, 0.8)';
+                        break;
+                    case '-2':
+                        containerColor = 'rgba(80, 80, 80, 0.8)';
+                        break;
+                    case '-3':
+                        containerColor = 'rgba(76, 41, 0, 0.8)';
+                        break;
+                    default:
+                        containerColor = 'rgba(100, 100, 100, 0.8)';
+                }
+
+                let bubbleBorderRadius;
+                if (textSegments.length === 1) {
+                    bubbleBorderRadius = {
+                        topLeft: 50,
+                        topRight: 50,
+                        bottomRight: 50,
+                        bottomLeft: 50
+                    };
+                } else if (i === 0) {
+                    bubbleBorderRadius = firstBubbleBorderRadius;
+                } else if (i === textSegments.length - 1) {
+                    bubbleBorderRadius = lastBubbleBorderRadius;
+                } else {
+                    bubbleBorderRadius = middleBubbleBorderRadius;
+                }
+
+                ctx.fillStyle = containerColor;
+                ctx.beginPath();
+                ctx.moveTo(currentX + bubbleBorderRadius.topLeft + sideGap, currentY - 10);
+                ctx.lineTo(currentX + containerWidth - bubbleBorderRadius.topRight - sideGap, currentY - 10);
+                ctx.quadraticCurveTo(currentX + containerWidth - sideGap, currentY - 10, currentX + containerWidth - sideGap, currentY + bubbleBorderRadius.topRight - 10);
+                ctx.lineTo(currentX + containerWidth - sideGap, currentY + containerHeight - bubbleBorderRadius.bottomRight + 10);
+                ctx.quadraticCurveTo(currentX + containerWidth - sideGap, currentY + containerHeight + 10, currentX + containerWidth - bubbleBorderRadius.bottomRight - sideGap, currentY + containerHeight + 10);
+                ctx.lineTo(currentX + bubbleBorderRadius.bottomLeft + sideGap, currentY + containerHeight + 10);
+                ctx.quadraticCurveTo(currentX + sideGap, currentY + containerHeight + 10, currentX + sideGap, currentY + containerHeight - bubbleBorderRadius.bottomLeft + 10);
+                ctx.lineTo(currentX + sideGap, currentY + bubbleBorderRadius.topLeft - 10);
+                ctx.quadraticCurveTo(currentX + sideGap, currentY - 10, currentX + bubbleBorderRadius.topLeft + sideGap, currentY - 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '35px "custom"';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+
+                let textX = currentX + sideGap + 30;
+                let textY = currentY + 15;
+
+                lines.forEach(line => {
+                    ctx.fillText(line, textX, textY);
+                    textY += lineHeight;
+                });
+
+                currentY += containerHeight + gapBetweenContainers;
+                lastContainerHeight = containerHeight;
+                totalHeight += containerHeight + gapBetweenContainers;
+            }
+
+            const profilePicSize = 65;
+            const profilePicX = 55;
+            let profilePicY = 30;
+            if (chatBubblePositions.length > 0) {
+                const lastChatBubble = chatBubblePositions[chatBubblePositions.length - 1];
+                profilePicY = lastChatBubble.y + lastChatBubble.height - profilePicSize;
+            }
+
+            const avatarImage = await loadImage(avatarUrl);
+            ctx.beginPath();
+            ctx.arc(profilePicX + profilePicSize / 2, profilePicY + profilePicSize / 2, profilePicSize / 2, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.clip();
+            ctx.drawImage(avatarImage, profilePicX, profilePicY, profilePicSize, profilePicSize);
+
+            const outputPath = path.join(__dirname, 'fakechat-output.png');
+            const out = fs.createWriteStream(outputPath);
+            const stream = canvas.createPNGStream();
+            stream.pipe(out);
+            out.on('finish', () => {
+                console.log('Fake chat image created successfully!');
+                message.reply({
+                    body: '',
+                    attachment: fs.createReadStream(outputPath)
+                }, () => fs.unlinkSync(outputPath));
+            });
+        } catch (err) {
+            console.error('Error in onStart fakechat', err);
+        }
     }
 };
 
-async function getUserProfilePic(userID) {
-    try {
-        const response = await axios.get(`https://graph.facebook.com/${userID}/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662`, { responseType: 'arraybuffer' });
-        return Buffer.from(response.data, 'binary');
-    } catch (error) {
-        console.error("Error fetching profile picture:", error);
-        return null;
-    }
-}
-
-async function createCircularImage(imageData, size) {
-    const img = await jimp.read(imageData);
-    img.resize(size, size);
-    img.circle();
-    return img.getBufferAsync(jimp.MIME_PNG);
-}
-
-function drawImage(ctx, imageData, x, y) {
-    loadImage(imageData).then(image => {
-        ctx.drawImage(image, x, y);
-    }).catch(error => {
-        console.error("Error :", error);
+async function getUserInfo(api, uid) {
+    return new Promise((resolve, reject) => {
+        api.getUserInfo(uid, (err, ret) => {
+            if (err) return reject(err);
+            resolve(ret[uid]);
+        });
     });
+}
+
+async function downloadFont(fontUrl) {
+    const response = await axios.get(fontUrl, { responseType: 'arraybuffer' });
+    const fontData = Buffer.from(response.data, 'binary');
+    const fontPath = path.join(__dirname, `font-${Date.now()}.ttf`);
+    fs.writeFileSync(fontPath, fontData);
+    return fontPath;
+}
+
+async function downloadImage(imageUrl, imageName) {
+    const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+    const imagePath = path.join(__dirname, imageName);
+    fs.writeFileSync(imagePath, Buffer.from(response.data, 'binary'));
+    return imagePath;
+}
+
+function splitText(ctx, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const width = ctx.measureText(currentLine + ' ' + word).width;
+
+        if ((currentLine.split(' ').length === 3 && Math.random() < 0.5) || currentLine.split(' ').length === 4) {
+            lines.push(currentLine.trim());
+            currentLine = '';
+        }
+
+        if (currentLine === '') {
+            currentLine = word;
+        } else {
+            currentLine += ' ' + word;
+        }
+    }
+
+    if (currentLine !== '') {
+        lines.push(currentLine.trim());
+    }
+
+    return lines;
 }
