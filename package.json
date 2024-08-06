@@ -53,8 +53,7 @@
 		"ytdl-core": "^4.11.5",
 		"@neoxr/ytdl-core": "^4.11.5",
 		"discord-image-generation": "^1.4.25",
-		"yt-search": "^2.11.0",
-		"unlimate-guitar": "^1.0.3",
+		"yt-search": "^2.11.1"
 		"fs": "^0.0.1-security",
 		"util": "^0.12.5",
  		"pastebin-api": "^7.0.0",
