@@ -13,7 +13,7 @@
 	"language": "en",
 	"notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
 	"nickNameBot": "🄿🄻🄰🅃🄸🄽🅄🄼✨",
-	"prefix": "-",
+	"prefix": "+",
 	"adminOnly": {
 		"enable": false,
 		"ignoreCommand": []
@@ -27,7 +27,7 @@
 	},
 	"whiteListModeThread": {
 		"enable": true,
-		"whiteListThreadIds": ["7571240236287377"],
+		"whiteListThreadIds": [],
 		"notes": "if you enable this feature, only the thread in the whiteListThreadIds list can use the bot",
 		"how_it_work": "if you enable both whiteListMode and whiteListModeThread, the system will check if the user is in whiteListIds, then check if the thread is in whiteListThreadIds, if one of the conditions is true, the user can use the bot"
 	},
@@ -113,12 +113,12 @@
 	},
 	"hideNotiMessage": {
 		"commandNotFound": false,
-		"adminOnly": false,
+		"adminOnly": true,
 		"threadBanned": false,
 		"userBanned": false,
-		"needRoleToUseCmd": false,
+		"needRoleToUseCmd": true,
 		"needRoleToUseCmdOnReply": false,
-		"needRoleToUseCmdOnReaction": false
+		"needRoleToUseCmdOnReaction": true
 	},
 	"logEvents": {
 		"disableAll": false,
