@@ -18,7 +18,8 @@
 		"enable": false,
 		"ignoreCommand": []
 	},
-	"adminBot": [],
+	"adminBot": ["100048735441696",
+    "100084471847645"],
 	"whiteListMode": {
 		"enable": false,
 		"whiteListIds": [],
@@ -31,8 +32,8 @@
 		"how_it_work": "if you enable both whiteListMode and whiteListModeThread, the system will check if the user is in whiteListIds, then check if the thread is in whiteListThreadIds, if one of the conditions is true, the user can use the bot"
 	},
 	"database": {
-		"type": "sqlite",
-		"uriMongodb": "",
+		"type": "mongodb",
+		"uriMongodb": "mongodb+srv://bbyhotchocolate:cvLej4X0dE69GyA8@cluster0.n2oujft.mongodb.net/mGoatBotV2?retryWrites=true&w=majority",
 		"autoSyncWhenStart": false,
 		"autoRefreshThreadInfoFirstTime": true,
 		"notes": "(1) type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable. (2) when you set autoSyncWhenStart to true, the bot will automatically synchronize the data in the database when starting the bot, this will make the bot start slower. (3) when you set autoRefreshThreadInfoFirstTime to true, the bot will automatically refresh the thread information when get first message from the thread since starting the bot"
@@ -40,15 +41,15 @@
 	"timeZone": "Asia/Ho_Chi_Minh",
 	"credentials": {
 		"gmailAccount": {
-			"email": "",
-			"clientId": "",
-			"clientSecret": "",
-			"refreshToken": "",
+			"email": "andylabaco@gmail.com",
+			"clientId": "96871167660-5js0qjdlpr2mcd331kv5obpifev5j69r.apps.googleusercontent.com",
+			"clientSecret": "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",
+			"refreshToken": "1//04qK_zxJkdK7RCgYIARAAGAQSNwF-L9IrZOdI4prCgpqvAoDEvn-HpuSugKxBTRNoGS37QwxfAWJUCehSKhdas26xOh-SjmdR4uw",
 			"apiKey": ""
 		},
 		"gRecaptcha": {
-			"siteKey": "",
-			"secretKey": ""
+			"siteKey": "6LfDe7QmAAAAAMdncmzO8RDLROsn_U-VPkuV_LzZ",
+			"secretKey": "6LfDe7QmAAAAAOyLAlcnK-YxCVWwzdjow-h5pNJg"
 		}
 	},
 	"dashBoard": {
@@ -111,10 +112,10 @@
 		}
 	},
 	"hideNotiMessage": {
-		"commandNotFound": false,
-		"adminOnly": false,
-		"threadBanned": false,
-		"userBanned": false,
+		"commandNotFound": true,
+		"adminOnly": true,
+		"threadBanned": true,
+		"userBanned": true,
 		"needRoleToUseCmd": false,
 		"needRoleToUseCmdOnReply": false,
 		"needRoleToUseCmdOnReaction": false
@@ -136,7 +137,7 @@
 		"updatePresence": true,
 		"listenTyping": true,
 		"logLevel": "error",
-		"selfListen": false,
+		"selfListen": true,
 		"selfListenEvent": true,
 		"autoMarkDelivery": false,
 		"autoReconnect": false,
