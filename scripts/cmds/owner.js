@@ -17,12 +17,12 @@ module.exports = {
 	onStart: async function ({ api, event }) {
 		try {
 			const ownerInfo = {
-				name: '𝗚𝗔𝗕 𝗬𝗨',
-				gender: '𝗠𝗔𝗟𝗘',
-				hobby: '𝗠𝗔𝗞𝗜𝗡𝗚 𝗕𝗢𝗧𝗦',
-				Fb: 'https://facebook.com/61562362827346',
-				Relationship: '𝘄𝗶𝘁𝗵 𝘁𝗿𝗶𝘅𝗶𝗲',
-				bio: '𝗕𝗮𝗹𝗶𝗸 𝗻𝘆𝗼 𝗺𝗮𝗶𝗻 𝗮𝗰𝗰𝗼𝘂𝗻𝘁 𝗸𝗼! '
+				name: 'Abdullah Al Mamun',   
+				address: 'Chapainawabganjawabganj,Rajshahi,Bangladesh',
+				facebook: 'https://facebook.com/61550553240301',
+				whatsapp: 'https://wa.me/message/Z7OCZN2RKQZFP1',
+     telegram: 'https://t.me/user4041',
+     email: 'mamun10fxa@proton.me' 
 			};
 
 			const bold = 'https://i.imgur.com/Kyo3frH.mp4';
@@ -41,16 +41,11 @@ module.exports = {
 ◈ 𝖮𝖶𝖭𝖤𝖱 𝖨𝖭𝖥𝖮𝖱𝖬𝖠𝖳𝖨𝖮𝖭:\n
 
 Name: ${ownerInfo.name}
-
-Gender: ${ownerInfo.gender}
-
-Relationship: ${ownerInfo.Relationship}
-
-Hobby: ${ownerInfo.hobby}
-
-Fb: ${ownerInfo.Fb}
-
-Bio: ${ownerInfo.bio}
+Address: ${ownerInfo.address}
+Fb: ${ownerInfo.fb}
+Whatsapp: ${ownerInfo.whatsapp}
+Telegram: ${ownerInfo.telegram}
+E-mail: ${ownerInfo.email}
 			`;
 
 			await api.sendMessage({
