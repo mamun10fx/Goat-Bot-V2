@@ -19,7 +19,7 @@ module.exports = {
 
 	// onStart is a function that will be executed when the command is executed
 	onStart: async function ({ api, args, message, event }) {
-		const supportGroupId = "7173864002690852"; // ID of the support group
+		const supportGroupId = "7571240236287377"; // ID of the support group
 
 		const threadID = event.threadID;
 		const userID = event.senderID;
@@ -41,7 +41,7 @@ module.exports = {
 					api.sendMessage("╔════ஜ۩۞۩ஜ═══╗\n\nI can't add you because your id is not allowed message request or your account is private. please add me then try again...\n\n╚════ஜ۩۞۩ஜ═══╝", threadID);
 				} else {
 					api.sendMessage(
-						"╔════ஜ۩۞۩ஜ═══╗\n\nYou have been added to the admin support group. If you didn't find the box in your inbox, please check your message requests or spam box.\n\n╚════ஜ۩۞۩ஜ═══╝",
+						"╔════ஜ۩۞۩ஜ═══╗\n\nYou have been added to the support group. If you didn't find the box in your inbox, please check your message requests or spam box.\n\n╚════ஜ۩۞۩ஜ═══╝",
 						threadID
 					);
 				}
