@@ -54,15 +54,7 @@ module.exports = {
           '/picture?width=512&height=512&access_token=6628568379%7Cc1e620fa708a1d5696fb991c1bde5662',
         _0x372218 = {
           body:
-            '\u274FName: ' +
-            _0x39b171 +
-            '\n\u274FGender: ' +
-            _0x343e55 +
-            '\n\u274FUID: ' +
-            _0x2a9222 +
-            '\n\u274FProfile URL: ' +
-            _0x776a00 +
-            '\n\u274FProfile Picture:',
+            '\u274FProfile Picture:',
           attachment: await global.utils.getStreamFromURL(_0x2ee572),
         }
       return _0x50d2e2.sendMessage(_0x372218, _0x36244f.threadID)
