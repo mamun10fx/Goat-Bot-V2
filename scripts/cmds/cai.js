@@ -5,6 +5,7 @@ const models = ["jasrel1", "giyu", "gojo", "akhiro"];
 module.exports = {
   config: {
     name: "cai",
+    category: "ai",
     aliases: ["characterAI", "char.ai"],
     author: "AkhiroDEV",
     shortDescription: "Interact with available characters by choosing a model and putting your query",
