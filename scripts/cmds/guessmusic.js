@@ -1,6 +1,6 @@
 const axios = require('axios');
 const fs = require('fs-extra');
-const ytdl = require('@neoxr/ytdl-core');
+const ytdl = require('ytdl-core');
 const yts = require('yt-search');
 const path = require('path');
 const util = require('util');
