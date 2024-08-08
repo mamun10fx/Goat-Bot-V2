@@ -5,6 +5,7 @@ module.exports = {
     config: {
     name: "giyu",
     aliases: ["gab"],
+    category: "ai",
     author: "AkhiroDEV",
     shortDescription: "Interact with Giyu, a character from Demon Slayer",
   },
