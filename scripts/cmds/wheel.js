@@ -20,6 +20,7 @@ module.exports = {
     version: "1.0",
     author: "Vex_Kshitiz",
     role: 0,
+    category: "fun",
     shortDescription: "Spin the wheel",
     longDescription: "Create your own lucky wheel and spin to get random result",
     guide: {

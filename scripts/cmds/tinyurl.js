@@ -22,7 +22,7 @@ async function shortURL(api, event) {
 module.exports = {
     config: {
         name: "tinyurl",
-        aliases: ["t"],
+        aliases: ["tin"],
         version: "2.0",
         author: "Vex_Kshitiz",
         countDown: 10,
