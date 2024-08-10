@@ -18,15 +18,14 @@
 		"enable": false,
 		"ignoreCommand": []
 	},
-	"adminBot": ["100048735441696",
-    "100084471847645","61550553240301"],
+	"adminBot": ["61550553240301"],
 	"whiteListMode": {
-		"enable": true,
+		"enable": false,
 		"whiteListIds": ["61550553240301","100046226001757","100084471847645","61553057523258","100068677724186"],
 		"notes": "if you enable this feature, only the ids in the whiteListIds list can use the bot"
 	},
 	"whiteListModeThread": {
-		"enable": true,
+		"enable": false,
 		"whiteListThreadIds": [],
 		"notes": "if you enable this feature, only the thread in the whiteListThreadIds list can use the bot",
 		"how_it_work": "if you enable both whiteListMode and whiteListModeThread, the system will check if the user is in whiteListIds, then check if the thread is in whiteListThreadIds, if one of the conditions is true, the user can use the bot"
@@ -34,7 +33,7 @@
 	"database": {
 		"type": "mongodb",
 		"uriMongodb": "mongodb+srv://bbyhotchocolate:cvLej4X0dE69GyA8@cluster0.n2oujft.mongodb.net/mGoatBotV2?retryWrites=true&w=majority",
-		"autoSyncWhenStart": false,
+		"autoSyncWhenStart": true,
 		"autoRefreshThreadInfoFirstTime": true,
 		"notes": "(1) type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable. (2) when you set autoSyncWhenStart to true, the bot will automatically synchronize the data in the database when starting the bot, this will make the bot start slower. (3) when you set autoRefreshThreadInfoFirstTime to true, the bot will automatically refresh the thread information when get first message from the thread since starting the bot"
 	},
@@ -114,9 +113,9 @@
 	"hideNotiMessage": {
 		"commandNotFound": false,
 		"adminOnly": true,
-		"threadBanned": false,
+		"threadBanned": true,
 		"userBanned": false,
-		"needRoleToUseCmd": true,
+		"needRoleToUseCmd": false,
 		"needRoleToUseCmdOnReply": false,
 		"needRoleToUseCmdOnReaction": true
 	},
@@ -139,7 +138,7 @@
 		"logLevel": "error",
 		"selfListen": true,
 		"selfListenEvent": true,
-		"autoMarkDelivery": false,
+		"autoMarkDelivery": true,
 		"autoReconnect": false,
 		"notes": "Document here: https://github.com/ntkhang03/fb-chat-api/blob/master/DOCS.md#apisetoptionsoptions "
 	}
