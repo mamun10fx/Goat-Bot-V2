@@ -101,6 +101,12 @@ module.exports = {
 
 
 	onStart: async function ({ message, args, usersData, event, getLang, api }) {
+    const permission = [];
+  if (permission.includes(event.senderID)) {
+    api.sendMessage("Only Gab Yu can use this command!", event.threadID, event.messageID);
+    return;
+  }
+    
 
 
 		switch (args[0]) {
