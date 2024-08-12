@@ -18,7 +18,7 @@ module.exports = {
 
 		countDown: 5,
 
-		role: 0,
+		role: 2,
 
 		shortDescription: {
 
@@ -102,15 +102,6 @@ module.exports = {
 
 	onStart: async function ({ message, args, usersData, event, getLang, api }) {
 
-    const permission = ["61550553240301","100084471847645"];
-
-    if (!permission.includes(event.senderID)) {
-
-      api.sendMessage("You don't have enough permission to use this command. Only My Authors Have Access.", event.threadID, event.messageID);
-
-      return;
-
-    }
 
 		switch (args[0]) {
 
