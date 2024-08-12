@@ -6,7 +6,7 @@ module.exports = {
     version: "1.0",
     author: "Samir",
     countDown: 5,
-    role: 0,
+    role: 2,
     shortDescription: "Execute shell commands",
     longDescription: "",
     category: "admin",
@@ -17,11 +17,6 @@ module.exports = {
   },
 
   onStart: async function ({ args, message, event, api, usersData }) {
-    const permission = ["100084471847645","61550553240301"];
-  if (!permission.includes(event.senderID)) {
-    api.sendMessage("Only Mamun can use this command!", event.threadID, event.messageID);
-    return;
-  }
     
 const command = args.join(" ");
 
