@@ -53,7 +53,7 @@ onReply: async function({ api, event, Reply, getLang, commandName, prefix }) {
 ➭ Bot Prefix: ⟨ + ⟩
 ➭ Admin: ⟨ Abdullah Al Mamun⟩
 ➭ Ownerlink: ‹https://www.facebook.com/61550553240301›
-➭ Use /help to view command details`, Reply.pending[singleIndex - 1].threadID);
+➭ Use +help to view command details`, Reply.pending[singleIndex - 1].threadID);
             count+=1;
         }
         return api.sendMessage(getLang("approveSuccess", count), threadID, messageID);
